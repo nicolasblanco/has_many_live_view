@@ -24,7 +24,7 @@ defmodule HasManyLiveViewWeb.ProjectLive do
           <%= label fp, :description %>
           <%= textarea fp, :description %>
 
-          <button type="button">Remove project</button>
+          <button type="button" phx-click="remove_project" phx-value-index="<%= fp.index %>">Remove project</button>
         <% end %>
         <br>
 
@@ -44,6 +44,18 @@ defmodule HasManyLiveViewWeb.ProjectLive do
 
   def handle_event("validate", %{"user" => user_params}, socket) do
     changeset = User.changeset(%User{}, user_params)
+
+    {:noreply, assign(socket, :changeset, changeset)}
+  end
+
+  def handle_event("remove_project", %{"index" => index_string}, socket) do
+    index = String.to_integer(index_string)
+    projects = socket.assigns.changeset
+               |> get_field(:projects, [])
+               |> List.delete_at(index)
+
+    changeset = socket.assigns.changeset
+               |> put_embed(:projects, projects)
 
     {:noreply, assign(socket, :changeset, changeset)}
   end
