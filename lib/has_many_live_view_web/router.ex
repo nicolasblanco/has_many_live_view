@@ -17,6 +17,7 @@ defmodule HasManyLiveViewWeb.Router do
   scope "/", HasManyLiveViewWeb do
     pipe_through :browser
 
+    resources "/users", UserController
     get "/", PageController, :index
   end
 

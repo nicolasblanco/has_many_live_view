@@ -1,14 +1,13 @@
-defmodule HasManyLiveView.User do
+defmodule HasManyLiveView.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
-
-  alias HasManyLiveView.Project
+  alias HasManyLiveView.Accounts.Project
 
   schema "users" do
     field :first_name, :string
     field :last_name, :string
 
-    embeds_many :projects, Project
+    embeds_many :projects, Project, on_replace: :delete
 
     timestamps()
   end

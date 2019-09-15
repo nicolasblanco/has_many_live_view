@@ -2,13 +2,15 @@ defmodule HasManyLiveViewWeb.ProjectLive do
   use Phoenix.LiveView
   import Phoenix.HTML.Form
   import Ecto.Changeset
-  alias HasManyLiveView.{User, Project}
+  alias HasManyLiveView.Accounts.{User, Project}
+  alias HasManyLiveViewWeb.Router.Helpers, as: Routes
 
   def render(assigns) do
     ~L"""
       <h1>User</h1>
 
-      <%= f = form_for @changeset, "#", [phx_change: :validate] %>
+      <%= f = form_for @changeset, Routes.user_path(@socket, :update, @user), [phx_change: :validate] %>
+        <input type="hidden" name="_csrf_token" value="<%= @csrf_token %>" />
         <%= label f, :first_name %>
         <%= text_input f, :first_name %>
         <br/>
@@ -36,14 +38,17 @@ defmodule HasManyLiveViewWeb.ProjectLive do
     """
   end
 
-  def mount(_session, socket) do
-    changeset = User.changeset(%User{}, %{})
+  def mount(%{csrf_token: csrf_token}, socket) do
+    user = User |> Ecto.Query.first |> HasManyLiveView.Repo.one
+    changeset = User.changeset(user, %{})
 
-    {:ok, assign(socket, :changeset, changeset)}
+    {:ok, assign(socket, changeset: changeset,
+                         user: user,
+                         csrf_token: csrf_token)}
   end
 
   def handle_event("validate", %{"user" => user_params}, socket) do
-    changeset = User.changeset(%User{}, user_params)
+    changeset = User.changeset(socket.assigns.user, user_params)
 
     {:noreply, assign(socket, :changeset, changeset)}
   end

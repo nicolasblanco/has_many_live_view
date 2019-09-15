@@ -1,4 +1,4 @@
-defmodule HasManyLiveView.Project do
+defmodule HasManyLiveView.Accounts.Project do
   use Ecto.Schema
   import Ecto.Changeset
 
